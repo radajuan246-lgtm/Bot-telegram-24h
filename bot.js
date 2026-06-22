@@ -1,9 +1,9 @@
 const { Telegraf, Markup } = require('telegraf');
 
-// ⚠️ Tus datos
-const bot = new Telegraf(process.env.BOT_TOKEN); // Token seguro en Render
+// ⚠️ CONFIGURACIÓN - EL TOKEN VA SOLO EN RENDER
+const bot = new Telegraf(process.env.BOT_TOKEN);
 const TU_USUARIO = "@Cajicahex"; // Tu usuario de contacto
-const TU_ID = 8830576173; // Pon aquí tu ID numérico de Telegram
+const TU_ID = 8830576173; // Pon aquí tu ID numérico
 
 // ──────────────────────────────────────────────
 // 🛒 LISTA DE PRODUCTOS
@@ -53,7 +53,7 @@ const PRODUCTOS = {
 };
 
 // ──────────────────────────────────────────────
-// 💳 BOTONES DE MÉTODOS DE PAGO
+// 💳 BOTONES DE PAGO
 // ──────────────────────────────────────────────
 const botonesPago = Markup.inlineKeyboard([
   [Markup.button.callback('💳 PayPal', 'pago_paypal')],
@@ -75,12 +75,12 @@ const botonesPago = Markup.inlineKeyboard([
 bot.command('start', ctx => {
   ctx.replyWithMarkdown(`👋 *¡Bienvenido a Ghxst Hxck Oficial!* 🛒
 
-📋 Escribe cualquiera de estos comandos:
+📋 Comandos:
 /lista → Ver todos los productos
-/paneles → Ver paneles disponibles
+/paneles → Ver paneles
 /freefire → Cuentas y diamantes
 /otros → Bypass, Proxy, Private
-/pagos → Ver métodos de pago
+/pagos → Métodos de pago
 /contacto → Hablar con atención`);
 });
 
@@ -103,229 +103,146 @@ ${PRODUCTOS.private}
 
 ${PRODUCTOS.proyecto_panel}
 
-📩 Para pedidos o dudas: ${TU_USUARIO}
+📩 Dudas: ${TU_USUARIO}
 
-Escribe el nombre del producto para iniciar tu compra`);
+Escribe el nombre del producto para comprar`);
 });
 
-bot.command('paneles', ctx => {
-  ctx.replyWithMarkdown(`${PRODUCTOS.panel_extreme}\n\n${PRODUCTOS.panel_basico}`);
-});
-
-bot.command('freefire', ctx => {
-  ctx.replyWithMarkdown(`${PRODUCTOS.cuentas_ff}\n\n${PRODUCTOS.diamantes_ff}`);
-});
-
-bot.command('otros', ctx => {
-  ctx.replyWithMarkdown(`${PRODUCTOS.bypass}\n\n${PRODUCTOS.proxy_ios}\n\n${PRODUCTOS.private}\n\n${PRODUCTOS.proyecto_panel}`);
-});
-
-bot.command('pagos', ctx => {
-  ctx.replyWithMarkdown(`~*MÉTODOS DE PAGO GHXST HXCK*~
-Elige el que te quede más cómodo`, botonesPago);
-});
-
-bot.command('contacto', ctx => {
-  ctx.replyWithMarkdown(`📞 *ATENCIÓN AL CLIENTE*
-Escribe directamente:
-👉 ${TU_USUARIO}
-
-⏰ Horario: Todos los días de 8:00 AM a 10:00 PM`);
-});
+bot.command('paneles', ctx => ctx.replyWithMarkdown(`${PRODUCTOS.panel_extreme}\n\n${PRODUCTOS.panel_basico}`));
+bot.command('freefire', ctx => ctx.replyWithMarkdown(`${PRODUCTOS.cuentas_ff}\n\n${PRODUCTOS.diamantes_ff}`));
+bot.command('otros', ctx => ctx.replyWithMarkdown(`${PRODUCTOS.bypass}\n\n${PRODUCTOS.proxy_ios}\n\n${PRODUCTOS.private}\n\n${PRODUCTOS.proyecto_panel}`));
+bot.command('pagos', ctx => ctx.replyWithMarkdown(`~*MÉTODOS DE PAGO GHXST HXCK*~`, botonesPago));
+bot.command('contacto', ctx => ctx.replyWithMarkdown(`📞 Atención: ${TU_USUARIO} | 8AM - 10PM`));
 
 // ──────────────────────────────────────────────
-// ✅ FUNCIÓN PRINCIPAL: AL ESCRIBIR EL PRODUCTO
+// ✅ AL ESCRIBIR PRODUCTO
 // ──────────────────────────────────────────────
 bot.on('text', ctx => {
   const texto = ctx.message.text.toLowerCase().trim();
   let seleccionado = null;
 
-  // Detectar cada producto
   if (texto.includes('panel extreme')) seleccionado = PRODUCTOS.panel_extreme;
   else if (texto.includes('panel básico') || texto.includes('panel basico')) seleccionado = PRODUCTOS.panel_basico;
   else if (texto.includes('bypass')) seleccionado = PRODUCTOS.bypass;
   else if (texto.includes('proxy ios')) seleccionado = PRODUCTOS.proxy_ios;
-  else if (texto.includes('cuentas free fire') || texto.includes('cuenta free fire') || texto.includes('cuentas')) seleccionado = PRODUCTOS.cuentas_ff;
-  else if (texto.includes('diamantes')) seleccionado = PRODUCTOS.diamantes_ff;
+  else if (texto.includes('cuenta') || texto.includes('free fire')) seleccionado = PRODUCTOS.cuentas_ff;
+  else if (texto.includes('diamante')) seleccionado = PRODUCTOS.diamantes_ff;
   else if (texto.includes('private')) seleccionado = PRODUCTOS.private;
   else if (texto.includes('proyecto panel')) seleccionado = PRODUCTOS.proyecto_panel;
 
-  // Si coincide, mostrar precio + mensaje + botones
   if (seleccionado) {
     ctx.replyWithMarkdown(`${seleccionado}
 
 ✅ *Para finalizar la compra selecciona el método de pago:*`, botonesPago);
-
-    // Aviso para ti
     ctx.telegram.sendMessage(TU_ID, `📥 *NUEVO PEDIDO*
-👤 Cliente: ${ctx.from.first_name} (@${ctx.from.username || 'Sin usuario'})
-🆔 ID: ${ctx.from.id}
-📦 Producto: ${ctx.message.text}`);
+👤 ${ctx.from.first_name} (@${ctx.from.username || 'Sin usuario'})
+🆔 ${ctx.from.id}
+📦 ${ctx.message.text}`);
   }
 });
 
 // ──────────────────────────────────────────────
-// 💳 DATOS DE CADA MÉTODO DE PAGO
+// 💳 DATOS DE PAGO
 // ──────────────────────────────────────────────
 bot.action('pago_paypal', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`💳 *PAYPAL*
-🔗 Enlace: https://www.paypal.me/dxntedomina
-
-📌 Realiza el pago y envía aquí la captura o comprobante para confirmar tu pedido.`);
+  ctx.replyWithMarkdown(`💳 PayPal: https://www.paypal.me/dxntedomina\n📌 Envía comprobante`);
 });
 
 bot.action('pago_mexico', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`🏦 *TRANSFERENCIA MÉXICO*
-🔢 Cuenta: 722969020420777451
-👤 Titular: Cristal Castro
-
-📌 Envía el comprobante de pago.`);
+  ctx.replyWithMarkdown(`🏦 Transferencia MX: 722969020420777451 | Cristal Castro\n📌 Envía comprobante`);
 });
 
 bot.action('pago_mercadopago', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`💵 *MERCADO PAGO*
-📩 Escríbeme para enviarte el enlace o datos de cobro.`);
+  ctx.replyWithMarkdown(`💵 Mercado Pago: Escríbeme para datos`);
 });
 
 bot.action('pago_zelle', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`🔵 *ZELLE*
-📱 Número: +1 (703) 232-7619
-👤 Nombre: Jose Martinez
-
-📌 Envía captura de la transacción.`);
+  ctx.replyWithMarkdown(`🔵 Zelle: +1 (703) 232-7619 | Jose Martinez\n📌 Envía captura`);
 });
 
 bot.action('pago_nequi', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`📱 *NEQUI*
-📲 Número: 3005729890
-👤 Titular: Cris Ro
-
-📌 Envía el comprobante aquí mismo.`);
+  ctx.replyWithMarkdown(`📱 Nequi: 3005729890 | Cris Ro\n📌 Envía comprobante`);
 });
 
 bot.action('pago_bancolombia', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`🏦 *BANCOLOMBIA*
-🔢 Cuenta de ahorros: 50665712513
-👤 Titular: Cristian David Romero Oviedo
-
-📌 Envía el comprobante de pago.`);
+  ctx.replyWithMarkdown(`🏦 Bancolombia: Ahorros 50665712513 | Cristian David Romero Oviedo\n📌 Envía comprobante`);
 });
 
 bot.action('pago_remitly', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`💸 *REMITLY*
-👤 Titular: Cristian David Romero Oviedo
-📍 Ciudad: Sincelejo, Sucre - Colombia
-🔢 Cuenta: 50665712513 (Ahorros)
-🏦 Banco: Bancolombia
-📞 Teléfono: +57 3005729890
-📧 Correo: kstecri28@gmail.com
-
-📌 Envía el comprobante de envío.`);
+  ctx.replyWithMarkdown(`💸 Remitly: Cristian David Romero Oviedo | Sincelejo, Sucre | Cuenta 50665712513 | 📞 +57 3005729890 | 📧 kstecri28@gmail.com\n📌 Envía código`);
 });
 
 bot.action('pago_binance', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`🪙 *BINANCE*
-👤 Usuario: Dxnte_Ghxst
-🆔 ID: 1083850312
-
-📌 Envía captura de la transacción.`);
+  ctx.replyWithMarkdown(`🪙 Binance: Usuario Dxnte_Ghxst | ID 1083850312\n📌 Envía captura`);
 });
 
 bot.action('pago_argentina', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`🇦🇷 *TRANSFERENCIA ARGENTINA*
-🏷️ Alias: nahuu13.mp
-🔢 CVU: 0000003100074597562027
-👤 Titular: Nahuel Alexis Lattanzio
-
-📌 Envía el comprobante.`);
+  ctx.replyWithMarkdown(`🇦🇷 Transferencia Arg: Alias nahuu13.mp | CVU 0000003100074597562027 | Nahuel Alexis Lattanzio\n📌 Envía comprobante`);
 });
 
 bot.action('pago_yape', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`🇵🇪 *YAPE*
-📱 Número: +51 926 720 632
-👤 Titular: Ramon
-
-📌 Envía captura del pago.`);
+  ctx.replyWithMarkdown(`🇵🇪 Yape: +51 926 720 632 | Ramon\n📌 Envía captura`);
 });
 
 bot.action('pago_western', ctx => {
   ctx.answerCbQuery();
-  ctx.replyWithMarkdown(`🌍 *WESTERN UNION*
-👤 Nombre: Cristian David Romero Oviedo
-📍 País: Colombia
-🏙️ Ciudad: Sincelejo, Sucre
-📞 Teléfono: +57 3005729890
-📧 Correo: kstecri28@gmail.com
-
-📌 Envía el código de envío.`);
+  ctx.replyWithMarkdown(`🌍 Western Union: Cristian David Romero Oviedo | Colombia, Sincelejo Sucre | 📞 +57 3005729890 | 📧 kstecri28@gmail.com\n📌 Envía código`);
 });
 
 // ──────────────────────────────────────────────
-// 📤 AVISO AL RECIBIR COMPROBANTE
+// 📤 COMPROBANTES
 // ──────────────────────────────────────────────
 bot.on(['photo', 'document'], ctx => {
-  const clienteId = ctx.from.id;
-  const clienteNombre = ctx.from.first_name;
-  const clienteUsuario = ctx.from.username || 'Sin usuario';
+  const id = ctx.from.id;
+  const nombre = ctx.from.first_name;
+  const usuario = ctx.from.username || 'Sin usuario';
 
   ctx.telegram.sendMessage(TU_ID, `📤 *COMPROBANTE RECIBIDO*
-👤 Cliente: ${clienteNombre} (@${clienteUsuario})
-🆔 ID: ${clienteId}
-✅ Para aprobar: /Aprobar ${clienteId}
-❌ Para rechazar: /Rechazar ${clienteId} Motivo`);
+👤 ${nombre} (@${usuario})
+🆔 ${id}
+✅ /Aprobar ${id}
+❌ /Rechazar ${id} Motivo`);
 
-  if (ctx.message.photo) {
-    ctx.telegram.sendPhoto(TU_ID, ctx.message.photo[ctx.message.photo.length - 1].file_id);
-  }
-  if (ctx.message.document) {
-    ctx.telegram.sendDocument(TU_ID, ctx.message.document.file_id);
-  }
+  if (ctx.message.photo) ctx.telegram.sendPhoto(TU_ID, ctx.message.photo.slice(-1)[0].file_id);
+  if (ctx.message.document) ctx.telegram.sendDocument(TU_ID, ctx.message.document.file_id);
 
-  ctx.reply('✅ Comprobante recibido correctamente. En breve revisaremos tu pago y te confirmaremos.');
+  ctx.reply('✅ Comprobante recibido, en breve confirmamos.');
 });
 
 // ──────────────────────────────────────────────
-// ✅ COMANDOS DE ADMINISTRADOR
+// ✅ APROBAR / RECHAZAR
 // ──────────────────────────────────────────────
 bot.command('Aprobar', ctx => {
-  if (ctx.from.id !== TU_ID) return ctx.reply('❌ No tienes permiso para usar este comando.');
-  const idCliente = ctx.message.text.split(' ')[1];
-  if (!idCliente) return ctx.reply('⚠️ Usa así: /Aprobar ID_DEL_CLIENTE');
-  ctx.telegram.sendMessage(idCliente, `✅ *PAGO APROBADO* 🎉
-Tu pedido ha sido confirmado. En breve te enviaremos el servicio o los datos correspondientes.
-
-¡Gracias por tu compra! 🤝`);
-  ctx.reply(`✅ Pedido aprobado al usuario ID: ${idCliente}`);
+  if (ctx.from.id !== TU_ID) return ctx.reply('❌ Sin permiso');
+  const id = ctx.message.text.split(' ')[1];
+  if (!id) return ctx.reply('⚠️ Usa: /Aprobar ID');
+  ctx.telegram.sendMessage(id, `✅ *PAGO APROBADO* 🎉 Enviamos tu servicio en breve.`);
+  ctx.reply(`✅ Aprobado a ID: ${id}`);
 });
 
 bot.command('Rechazar', ctx => {
-  if (ctx.from.id !== TU_ID) return ctx.reply('❌ No tienes permiso para usar este comando.');
+  if (ctx.from.id !== TU_ID) return ctx.reply('❌ Sin permiso');
   const partes = ctx.message.text.split(' ');
-  const idCliente = partes[1];
-  const motivo = partes.slice(2).join(' ') || 'No se pudo verificar la transacción.';
-  if (!idCliente) return ctx.reply('⚠️ Usa así: /Rechazar ID_DEL_CLIENTE Motivo');
-  ctx.telegram.sendMessage(idCliente, `❌ *PAGO NO APROBADO*
-Motivo: ${motivo}
-
-Si crees que hay un error, escríbenos a ${TU_USUARIO}`);
-  ctx.reply(`❌ Pedido rechazado al usuario ID: ${idCliente}
-Motivo: ${motivo}`);
+  const id = partes[1];
+  const motivo = partes.slice(2).join(' ') || 'No se pudo verificar';
+  if (!id) return ctx.reply('⚠️ Usa: /Rechazar ID Motivo');
+  ctx.telegram.sendMessage(id, `❌ *PAGO NO APROBADO* Motivo: ${motivo} | Duda: ${TU_USUARIO}`);
+  ctx.reply(`❌ Rechazado a ID: ${id}`);
 });
 
 // ──────────────────────────────────────────────
-// 🚀 INICIAR EL BOT
+// 🚀 INICIAR
 // ──────────────────────────────────────────────
 bot.launch();
-
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
