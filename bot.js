@@ -1,7 +1,7 @@
 const { Telegraf } = require('telegraf');
 
 // ⚠️ CONFIGURA AQUÍ TUS DATOS
-const bot = new Telegraf('8456580231:AAG1WSPgxlscVJj__af1xq_W_sANVkIXjpg'); // Pon tu token entre comillas
+const bot = new Telegraf('8821961842:AAEQD-TuuT2H92DIG_qDpAGbxeEqB6r-icY'); // Pon tu token entre comillas
 const TU_USUARIO = "@Cajicahex"; // Tu usuario de Telegram para que te contacten
 const TU_ID = 8830576173; // Pon tu ID numérico de Telegram para recibir pedidos
 
